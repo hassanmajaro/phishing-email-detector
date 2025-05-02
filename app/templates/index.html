@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🛡️ Phishing Email Detector</title>
+  <style>
+    :root {
+      --bg-color: #f2f6fc;
+      --container-bg: #ffffff;
+      --text-color: #000;
+      --primary-color: #334eac;
+      --result-bg-legit: #e8fce8;
+      --result-border-legit: #009900;
+      --result-color-legit: #006600;
+      --result-bg-phish: #ffe6e6;
+      --result-border-phish: #cc0000;
+      --result-color-phish: #b30000;
+      --url-bg: #fff8f0;
+      --url-border: #f08c00;
+      --url-color: #4d2d00;
+    }
+
+    body.dark {
+      --bg-color: #1e1e2f;
+      --container-bg: #2a2a3d;
+      --text-color: #fff;
+      --primary-color: #5a78ff;
+      --result-bg-legit: #163c16;
+      --result-border-legit: #4fff4f;
+      --result-color-legit: #9cff9c;
+      --result-bg-phish: #3f1f1f;
+      --result-border-phish: #ff6f6f;
+      --result-color-phish: #ffb3b3;
+      --url-bg: #2b2220;
+      --url-border: #ffaf60;
+      --url-color: #ffd1a0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      transition: all 0.3s ease;
+      flex-direction: column;
+    }
+
+    .container {
+      background-color: var(--container-bg);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 700px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      color: var(--primary-color);
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 20px;
+      display: block;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-top: 5px;
+      margin-bottom: 20px;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .phishing {
+      background-color: var(--result-bg-phish);
+      border: 1px solid var(--result-border-phish);
+      color: var(--result-color-phish);
+    }
+
+    .legit {
+      background-color: var(--result-bg-legit);
+      border: 1px solid var(--result-border-legit);
+      color: var(--result-color-legit);
+    }
+
+    .urls {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: var(--url-bg);
+      border: 1px dashed var(--url-border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--url-color);
+    }
+
+    .urls ul {
+      padding-left: 20px;
+      margin-top: 10px;
+    }
+
+    .urls li {
+      margin-bottom: 5px;
+      word-break: break-all;
+    }
+
+    .icon {
+      font-size: 1.3rem;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .toggle-btn {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      background: none;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 6px 16px;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.85rem;
+      text-align: center;
+      color: #777;
+    }
+
+    a {
+      color: var(--url-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ Phishing Email Detector</h1>
+
+    <form action="/predict" method="post">
+      <label for="subject">📩 Email Subject</label>
+      <input type="text" id="subject" name="subject" value="{{ subject if subject else '' }}" required>
+
+      <label for="body">📝 Email Body</label>
+      <textarea id="body" name="body" rows="8" required>{{ body if body else '' }}</textarea>
+
+      <input type="submit" value="🚨 Scan Email">
+    </form>
+
+    {% if prediction %}
+      <div class="result {{ 'phishing' if 'Phishing' in prediction else 'legit' }}">
+        <span class="icon">{% if 'Phishing' in prediction %}⚠️{% else %}✅{% endif %}</span>
+        Result: {{ prediction }}
+      </div>
+    {% endif %}
+
+    {% if urls %}
+      <div class="urls">
+        <span class="icon">🔗</span>
+        <strong>Suspicious URLs Detected:</strong>
+        <ul>
+          {% for url in urls %}
+            <li><a href="{{ url }}" target="_blank">{{ url }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+
+  <button class="toggle-btn" onclick="toggleMode()">🌓 Toggle Light/Dark Mode</button>
+
+  <div class="footer">
+    Built with ❤️ by <strong>Hassan Majaro</strong>
+    <hr>
+  </div>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+    }
+  </script>
+</body>
+</html>
