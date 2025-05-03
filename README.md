@@ -1,4 +1,4 @@
-# 🛡️ AI Phishing Email Detector
+# 🛡️ Phishing Email Detector
 
 A machine learning-powered phishing detector that analyzes email content and identifies suspicious patterns, including malicious URLs.  
 Built with 💻 Python, 🧠 scikit-learn, and 🌐 Flask.
@@ -23,7 +23,7 @@ Built with 💻 Python, 🧠 scikit-learn, and 🌐 Flask.
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ File Structure
 
 <pre>
   phishing_detector/
